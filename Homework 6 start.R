@@ -166,3 +166,23 @@ yes <- data$deg == "yes"
 
 jc.model.1 <- lm(log(wage)~edu+exp+city+reg+race+deg+com,data=train.data)
 jc.model.2 <- lm(log(wage)~edu+exp+city+reg+race+deg+com+,data=train.data)
+
+
+
+# Jackson's model selected by hand
+jc.model.7 <- lm(log(wage)~edu+poly(exp, degree=2)+city+reg+race+deg
+                 +edu*exp*race+deg*edu+deg*exp
+                 +reg*edu+city*exp
+                 +city*reg+city*deg,data=train.data)
+jc.model.7.test <- lm(log(wage)~edu+poly(exp, degree=2)+city+reg+race+deg
+                      +edu*exp*race+deg*edu+deg*exp
+                      +reg*edu+city*exp
+                      +city*reg+city*deg,data=test.data)
+AIC(jc.model.7) # 29783.19
+
+## PUT ON HOLD
+jc.model.8 <- lm(log(wage)~edu+poly(exp, degree=2)+city+reg+race
+                 +edu*exp+race*edu,data=train.data)
+jc.model.8.test <- lm(log(wage)~edu+poly(exp, degree=2)+city+reg+race
+                      +edu*exp+race*edu,data=test.data)
+AIC(jc.model.8) # 29857.8

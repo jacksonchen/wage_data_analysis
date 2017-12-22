@@ -26,8 +26,6 @@ train.data <- df[-index,]
 data <- train.data 
 test.data <- df[index,]
 
-test.data
-
 # Quality control check
 sum(train.data$race=="black")/nrow(data)
 sum(test.data$race=="black")/nrow(test.data)  
@@ -354,42 +352,21 @@ AIC(jc.model.3) # 29855.43
                 #     Y      1       2              3    4    5   6
 jc.model.4 <- lm(log(wage)~edu+poly(exp, degree=2)+city+reg+race+deg
                  +edu*exp
-                 +race*edu+race*exp+deg*edu+deg*exp+reg*edu+city*exp
+                 +deg*edu+deg*exp+reg*edu+city*exp
                  +city*reg+city*deg+reg*deg,data=train.data)
 AIC(jc.model.4) # 29792.36
 
 ## AFTER AIC Model Selection
 jc.model.5 <- lm(log(wage)~edu+poly(exp, degree=2)+city+race
-                 +edu*exp+race*edu+city*deg+reg*deg,data=train.data)
+                 +edu*exp+reg*edu+city*exp,data=train.data)
 jc.model.5.test <- lm(log(wage)~edu+poly(exp, degree=2)+city+race
-                 +edu*exp+race*edu+city*deg+reg*deg,data=test.data)
-AIC(jc.model.5) # 29832.34
+                 +edu*exp+reg*edu+city*exp,data=test.data)
+AIC(jc.model.5) # 29839.28
 summary(jc.model.5)
 
-jc.model.6 <- lm(log(wage)~edu+poly(exp, degree=2)+city+race
-                 +edu*exp+race*edu+reg*edu,data=train.data)
-jc.model.6.test <- lm(log(wage)~edu+poly(exp, degree=2)+city+race
-                 +edu*exp+race*edu+reg*edu,data=test.data)
-AIC(jc.model.6) # 29844.68
-summary(jc.model.6)
 
-# Jackson's model selected by hand
-jc.model.7 <- lm(log(wage)~edu+poly(exp, degree=2)+city+reg+race+deg
-                 +edu*exp*race+deg*edu+deg*exp
-                 +reg*edu+city*exp
-                 +city*reg+city*deg,data=train.data)
-jc.model.7.test <- lm(log(wage)~edu+poly(exp, degree=2)+city+reg+race+deg
-                 +edu*exp*race+deg*edu+deg*exp
-                 +reg*edu+city*exp
-                 +city*reg+city*deg,data=test.data)
-AIC(jc.model.7) # 29783.19
-
-## PUT ON HOLD
-jc.model.8 <- lm(log(wage)~edu+poly(exp, degree=2)+city+reg+race
-                 +edu*exp+race*edu,data=train.data)
-jc.model.8.test <- lm(log(wage)~edu+poly(exp, degree=2)+city+reg+race
-                 +edu*exp+race*edu,data=test.data)
-AIC(jc.model.8) # 29857.8
+jc.model.a <- lm(log(wage)~edu+poly(exp, degree=2)+city
+                 +edu*exp+reg*edu+city*exp+race,data=train.data)
 
 ############################
 # Model Selection
@@ -399,7 +376,7 @@ library(bestglm)
 
 predictors=cbind(edu,poly(exp, degree=2),city,reg,race,deg,com
                  ,edu*exp
-                 ,race_num*edu,race_num*exp,deg_num*edu,deg_num*exp,reg_num*edu,city_num*exp
+                 ,deg_num*edu,deg_num*exp,reg_num*edu,city_num*exp
                  ,city_num*reg_num,city_num*deg_num,city_num*deg_num)
 leaps.sub = leaps(x = predictors, y = log(wage))
 select=leaps.sub$Cp==min(leaps.sub$Cp)
@@ -415,22 +392,22 @@ plot(regsubsets.sub,scale="Cp",main="Model Selection Plot using Mallows' Cp")
 ############################
 
 # QQ Plot
-res <- rstudent(jc.model.6) # CHANGE THIS PER MODEL
-pred <- predict(jc.model.6) # CHANGE THIS PER MODEL
-qqnorm(res, main="Normal Q-Q Plot for Model 2")
+res <- rstudent(jc.model.5)
+pred <- predict(jc.model.5)
+qqnorm(res, main="Normal Q-Q Plot")
 qqline(res, datax = FALSE)
 
 # Histogram
-hist(res, main="Studentized Deleted Residuals Histogram for Model 2", xlab="Residuals")
+hist(res, main="Studentized Deleted Residuals Histogram", xlab="Residuals")
 
 # Line Plot with Residuals
 n <- length(data$wage)
-plot(1:n,res,main="Line Plot for Model 2",ylab="Deleted Residuals",xlab="")
+plot(1:n,res,main="Line Plot",ylab="Deleted Residuals",xlab="")
 abline(h=0,lty=3)
 lines(1:n,res,col=2)
 
 # Scatter Plot with Residuals
-plot(pred,res,main="Residual Plot for Model 2",xlab="Y-hat",ylab="Deleted Residuals")
+plot(pred,res,main="Residual Plot",xlab="Y-hat",ylab="Deleted Residuals")
 abline(h=0,lty=2)
 lines(supsmu(pred,res),col=2)
 
@@ -442,7 +419,7 @@ lines(supsmu(pred,res),col=2)
 mse <- function(sm) 
   mean(sm$residuals^2)
 
-mse(jc.model.5) # MSE: 0.2624992
-mse(jc.model.5.test) # MSPE: 0.2620625
+mse(jc.model.5) # MSE: 0.2626702
+mse(jc.model.5.test) # MSPE: 0.2621056
 
 # 
