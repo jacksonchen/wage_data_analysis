@@ -111,22 +111,21 @@ emp <- data$emp
 edu <- data$edu
 exp <- data$exp
 
-
 # City vs. region
 # There exists an interaction
-interaction.plot(city,reg,log(wage))
-summary(lm(formula = log(data$wage) ~ city_num  + reg_num + I(city_num*reg_num), data = data))
+interaction.plot(city,reg,log(wage), main="Interaction between region and city")
+summary(lm(formula = log(data$wage) ~ city  + reg + I(city_num*reg_num), data = data))
 
 # City vs. degree
 # interaction exists
-interaction.plot(city,deg,log(wage))
+interaction.plot(city,deg,log(wage), main="Interaction between degree and city")
 anova(lm(formula = log(data$wage) ~ data$city + data$deg, data = data))
 anova(lm(formula = log(data$wage) ~ data$deg + data$city, data = data))
 summary(lm(formula = log(data$wage) ~ city_num  + deg_num + I(city_num*deg_num), data = data))
 
 # City vs. race
 # no interaction
-interaction.plot(city,race,log(wage))
+interaction.plot(city,race,log(wage), main="Interaction between race and city")
 anova(lm(formula = log(data$wage) ~ data$city + data$race, data = data))
 anova(lm(formula = log(data$wage) ~ data$race + data$city, data = data))
 # t test p value > 0.05, so no interaction
@@ -134,17 +133,17 @@ summary(lm(formula = log(data$wage) ~ city_num  + race_num + I(city_num*race_num
 
 # Region vs. degree
 # yes, interaction exists
-interaction.plot(deg,reg,log(wage))
-summary(lm(formula = log(data$wage) ~ deg_num  + reg_num + I(deg_num*reg_num), data = data))
+interaction.plot(deg,reg,log(wage), main="Interaction between region and degree")
+summary(lm(formula = log(data$wage) ~ deg  + reg + I(deg_num*reg_num), data = data))
 
 # Region vs. race
 # no
-interaction.plot(reg,race,log(wage))
+interaction.plot(reg,race,log(wage), main="Interaction between region and race")
 summary(lm(formula = log(data$wage) ~ race_num  + reg_num + I(race_num*reg_num), data = data))
 
 # Degree vs. race
 # no interaction
-interaction.plot(deg,race,log(wage))
+interaction.plot(deg,race,log(wage), main="Interaction between degree and race")
 summary(lm(formula = log(data$wage) ~ deg_num  + race_num + I(race_num*deg_num), data = data))
 
 ##############
@@ -157,7 +156,9 @@ black <- data$race=="black"
 white <- data$race=="white"
 other <- data$race=="other"
 
-plot(data$edu,log(wage),col="lightgrey")
+plot(data$edu,log(wage),col="lightgrey", 
+     main="Interaction between education and race",
+     xlab="Years of education")
 abline(lm(log(data$wage)[black]~data$edu[black]),col=2)
 abline(lm(log(data$wage)[white]~data$edu[white]),col=3)
 abline(lm(log(data$wage)[other]~data$edu[other]),col=4)
@@ -173,10 +174,13 @@ black <- data$race=="black"
 white <- data$race=="white"
 other <- data$race=="other"
 
-plot(data$exp,log(wage),col="lightgrey")
+plot(data$exp,log(wage),col="lightgrey",
+     main="Interaction between experience and race",
+     xlab="Years of experience")
 abline(lm(log(data$wage)[black]~data$exp[black]),col=2)
 abline(lm(log(data$wage)[white]~data$exp[white]),col=3)
 abline(lm(log(data$wage)[other]~data$exp[other]),col=4)
+legend("topright",legend=c("Black","White","Other"),col=c(2,3,4),lty=c(1,1,1))
 
 # t test shows significance
 summary(lm(formula = log(data$wage) ~ race  + exp + I(race_num*exp), data = data))
@@ -213,9 +217,12 @@ summary(lm(formula = log(data$wage) ~ city  + emp + I(city_num*emp), data = data
 yes <- data$city=="yes"
 no <- data$city=="no"
 
-plot(data$exp, log(wage),col="lightgrey")
+plot(data$exp, log(wage),col="lightgrey",
+     main="Interaction between city and experience",
+     xlab="Years of Experience")
 lines(supsmu(data$exp[yes],log(data$wage)[yes]),col=2)
 lines(supsmu(data$exp[no],log(data$wage)[no]),col=3)
+legend("topright",legend=c("Yes","No"),col=c(2,3),lty=c(1,1))
 summary(lm(formula = log(data$wage) ~ city  + exp + I(city_num*exp), data = data))
 
 ### City vs edu
@@ -239,10 +246,12 @@ summary(lm(formula = log(data$wage) ~ city  + emp + I(city_num*emp), data = data
 yes <- data$deg=="yes"
 no <- data$deg=="no"
 
-plot(data$edu, log(wage),col="lightgrey")
+plot(data$edu, log(wage),col="lightgrey",
+     main="Interaction between college degree and education",
+     xlab="Years of Education")
 lines(supsmu(data$edu[yes],log(data$wage)[yes]),col=2)
 lines(supsmu(data$edu[no],log(data$wage)[no]),col=3)
-legend("topright",legend=c("yes","no"),col=c(2,3,4),lty=c(1,1,1))
+legend("topright",legend=c("Yes","No"),col=c(2,3),lty=c(1,1))
 
 summary(lm(formula = log(data$wage) ~ deg  + edu + deg*edu, data = data))
 summary(lm(formula = log(data$wage) ~ deg  + edu + I(deg_num*edu), data = data))
@@ -252,9 +261,12 @@ summary(lm(formula = log(data$wage) ~ deg  + edu + I(deg_num*edu), data = data))
 yes <- data$deg=="yes"
 no <- data$deg=="no"
 
-plot(data$exp, log(wage),col="lightgrey")
+plot(data$exp, log(wage),col="lightgrey",
+     main="Interaction between degree and experience",
+     xlab="Years of Experience")
 lines(supsmu(data$exp[yes],log(data$wage)[yes]),col=2)
 lines(supsmu(data$exp[no],log(data$wage)[no]),col=3)
+legend("topright",legend=c("Yes","No"),col=c(2,3),lty=c(1,1))
 summary(lm(formula = log(data$wage) ~ deg  + exp + I(deg_num*exp), data = data))
 
 ### Degree vs emp
@@ -274,11 +286,14 @@ ne <- data$reg=="northeast"
 s <- data$reg=="south"
 w <- data$reg=="west"
 
-plot(data$edu, log(wage),col="lightgrey")
+plot(data$edu, log(wage),col="lightgrey",
+     main="Interaction between region and education",
+     xlab="Years of Education")
 lines(supsmu(data$edu[mw],log(data$wage)[mw]),col=2)
 lines(supsmu(data$edu[ne],log(data$wage)[ne]),col=3)
-lines(supsmu(data$edu[s],log(data$wage)[s]),col=3)
-lines(supsmu(data$edu[w],log(data$wage)[w]),col=3)
+lines(supsmu(data$edu[s],log(data$wage)[s]),col=4)
+lines(supsmu(data$edu[w],log(data$wage)[w]),col=5)
+legend("topright",legend=c("Midwest","Northeast", "South", "West"),col=c(2,3,4,5),lty=c(1,1,1,1))
 summary(lm(formula = log(data$wage) ~ reg  + edu + I(reg_num*edu), data = data))
 
 ### Region vs exp
