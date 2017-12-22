@@ -340,11 +340,15 @@ AIC(jc.model.4) # 29792.36
 ## AFTER AIC Model Selection
 jc.model.5 <- lm(log(wage)~edu+poly(exp, degree=2)+city+race
                  +edu*exp+race*edu+reg*deg,data=train.data)
+jc.model.5.test <- lm(log(wage)~edu+poly(exp, degree=2)+city+race
+                 +edu*exp+race*edu+reg*deg,data=test.data)
 AIC(jc.model.5) # 29858.42
 summary(jc.model.5)
 
 jc.model.6 <- lm(log(wage)~edu+poly(exp, degree=2)+city+race
                  +edu*exp+race*edu+reg*edu,data=train.data)
+jc.model.6.test <- lm(log(wage)~edu+poly(exp, degree=2)+city+race
+                 +edu*exp+race*edu+reg*edu,data=test.data)
 AIC(jc.model.6) # 29844.68
 
 # Jackson's model selected by hand
@@ -352,11 +356,17 @@ jc.model.7 <- lm(log(wage)~edu+poly(exp, degree=2)+city+reg+race+deg
                  +edu*exp*race+deg*edu+deg*exp
                  +reg*edu+city*exp
                  +city*reg+city*deg,data=train.data)
+jc.model.7.test <- lm(log(wage)~edu+poly(exp, degree=2)+city+reg+race+deg
+                 +edu*exp*race+deg*edu+deg*exp
+                 +reg*edu+city*exp
+                 +city*reg+city*deg,data=test.data)
 AIC(jc.model.7) # 29783.19
 
 ## PUT ON HOLD
 jc.model.8 <- lm(log(wage)~edu+poly(exp, degree=2)+city+reg+race
                  +edu*exp+race*edu,data=train.data)
+jc.model.8.test <- lm(log(wage)~edu+poly(exp, degree=2)+city+reg+race
+                 +edu*exp+race*edu,data=test.data)
 AIC(jc.model.8) # 29857.8
 
 ############################
@@ -385,7 +395,45 @@ plot(regsubsets.sub,scale="bic")
 ############################
 # Model Selection Graphs
 ############################
+
+# QQ Plot
+res <- rstudent(jc.model.5) # CHANGE THIS PER MODEL
+pred <- predict(jc.model.5) # CHANGE THIS PER MODEL
+qqnorm(res)
+qqline(res, datax = FALSE)
+
+# Histogram
+hist(res, main="Studentized Deleted Residuals Histogram", xlab="Residuals")
+
+# Line Plot with Residuals
+n <- length(data$wage)
+plot(1:n,res,main="Line Plot",ylab="Deleted Residuals",xlab="")
+abline(h=0,lty=3)
+lines(1:n,res,col=2)
+
+# Scatter Plot with Residuals
+plot(pred,res,main="Residual Plot",xlab="Y-hat",ylab="Deleted Residuals")
+abline(h=0,lty=2)
+lines(supsmu(pred,res),col=2)
+
+################
+# Model Validation
+################
+
+# MSE vs MSPE
 mse <- function(sm) 
   mean(sm$residuals^2)
 
-mse(jc.model.5) # 0.2628706
+mse(jc.model.5) # MSE: 0.2628706
+mse(jc.model.5.test) # MSPE: 0.2623269
+
+mse(jc.model.6) # MSE: 0.2627153
+mse(jc.model.6.test) # MSPE: 0.2621318
+
+mse(jc.model.7) # MSE: 0.2627153
+mse(jc.model.7.test) # MSPE: 0.260843
+
+mse(jc.model.8) # MSE: 0.2629683
+mse(jc.model.8.test) # MSPE: 0.2627516
+
+# 
