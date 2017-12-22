@@ -26,6 +26,7 @@ train.data <- df[-index,]
 data <- train.data 
 test.data <- df[index,]
 
+test.data
 
 # Quality control check
 sum(train.data$race=="black")/nrow(data)
@@ -35,14 +36,14 @@ sum(test.data$race=="black")/nrow(test.data)
 # Rough model 1 
 r.model.1 <- lm(wage~edu+exp+city+reg+race+deg+com,data=train.data) 
 summary(r.model.1)
-qqnorm(rstudent(r.model.1))
+qqnorm(rstudent(r.model.1), main="Normal QQ Plot against wage")
 qqline(rstudent(r.model.1))
 
 
 # Rough model 2 
 r.model.2 <- lm(log(wage)~edu+exp+city+reg+race+deg+com,data=train.data)
 summary(r.model.2)
-qqnorm(rstudent(r.model.2))
+qqnorm(rstudent(r.model.2), main="Normal QQ Plot against log(wage)")
 qqline(rstudent(r.model.2))
 
 
@@ -51,44 +52,47 @@ qqline(rstudent(r.model.2))
 ############################################
 
 ##### com, can throw com out because the line looks very straight
-plot(data$com,log(data$wage))
+plot(data$com,log(data$wage), main="Log of Wages vs Commute Time", xlab="Commute Time", ylab="log(Wage)")
 lines(supsmu(data$com,log(data$wage)),col=2)
+summary(lm(log(data$wage)~data$com))
 
 ##### edu, positive correlation
-plot(data$edu,log(data$wage))
+plot(data$edu,log(data$wage), main="Log of Wages vs Years of Education", xlab="Years of Education", ylab="log(Wage)")
 lines(supsmu(data$edu,log(data$wage)),col=2)
 
-boxplot(log(data$wage)~data$edu)
+boxplot(log(data$wage)~data$edu, main="Log of Wages vs Years of Education", xlab="Years of Education", ylab="log(Wage)")
 lines(supsmu(data$edu,log(data$wage)),col=2)
 
 ### exp, negative parabolic correlation
-plot(data$exp,log(data$wage))
+plot(data$exp,log(data$wage), main="Log of Wages vs Years of Experience", xlab="Years of Experience", ylab="log(Wage)")
 lines(supsmu(data$exp,log(data$wage)),col=2)
 
-boxplot(log(data$wage)~data$exp)
+boxplot(log(data$wage)~data$exp, main="Log of Wages vs Years of Experience", xlab="Years of Experience", ylab="log(Wage)")
 lines(supsmu(data$exp,log(data$wage)),col=2)
 
 plot((data$exp)^2,log(data$wage))
 lines(supsmu((data$exp)^2,log(data$wage)),col=2)
 
 ### emp, slight positive correlation
-plot(data$emp,log(data$wage))
+plot(data$emp,log(data$wage), main="Log of Wages vs Number of Employees", xlab="Number of Employees", ylab="log(Wage)")
 lines(supsmu(data$emp,log(data$wage)),col=2)
 
-boxplot(log(data$wage)~data$emp)
+boxplot(log(data$wage)~data$emp, main="Log of Wages vs Number of Employees", xlab="Number of Employees", ylab="log(Wage)")
 lines(supsmu(data$emp,log(data$wage)),col=2)
 
 ### city, boxplot shows slight increase, needs more investigation
-boxplot(log(data$wage)~data$city)
+boxplot(log(data$wage)~data$city, main="Log of Wages vs City Inhabitation", xlab="City Inhabitation", ylab="log(Wage)")
 
 ### reg, boxplot does not seem to show much correlation, needs more investigation
-plot(log(data$wage)~data$reg)
+plot(log(data$wage)~data$reg, main="Log of Wages vs Region Inhabitation", xlab="Region Inhabited", ylab="log(Wage)")
+lines(supsmu(data$reg_num,log(data$wage)),col=2)
 
 ### race, seems to show some correlation
-plot(log(data$wage)~data$race)
+plot(log(data$wage)~data$race, main="Log of Wages vs Race", xlab="Race", ylab="log(Wage)")
+lines(supsmu(data$race_num,log(data$wage)),col=2)
 
 ### deg, seems to show positive correlation
-plot(log(data$wage)~data$deg)
+plot(log(data$wage)~data$deg, main="Log of Wages vs College Graduation", xlab="Graduated from College", ylab="log(Wage)")
 
 ############################################
 #### EDA (interaction plots)
