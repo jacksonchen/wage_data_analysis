@@ -449,9 +449,113 @@
 
       Now that the preliminary model investigation is complete and that all of the
       functional forms and interactions have been included in the model, we now
-      need to reduce the number of explanatory variables.
+      need to reduce the number of explanatory variables. In this study, we will
+      use the best subsets procedure and optimize for Mallows' $C_p$.
+
+      \begin{figure}
+        \centering
+        \begin{minipage}{.45\textwidth}
+          \centering
+          \includegraphics[scale=0.35]{selection/modelselect1}
+          \caption{Model Selection Plot using Mallows' $C_p$}
+          \label{fig:modelselect1}
+        \end{minipage}
+        \begin{minipage}{.45\textwidth}
+          \centering
+          \includegraphics[scale=0.35]{selection/modelselect2}
+          \caption{Model Selection Plot using Mallows' $C_p$ excluding the last term}
+          \label{fig:modelselect2}
+        \end{minipage}
+      \end{figure}
+
+      After using the \texttt{leap} library to generate model selection plots
+      (Figures \ref{fig:modelselect1} and \ref{fig:modelselect2}) the final two models
+      to pick from are:
+
+      \begin{align}
+        \log{Y} &= \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_2^2 + \beta_4 x_3 + \beta_5 x_5 + \beta_6 x_1 x_2 + \beta_7 x_1 x_5 + \beta_8 x_3 x_6 + \beta_9 x_4 x_6 \\
+        \log{Y} &= \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_2^2 + \beta_4 x_3 + \beta_5 x_5 + \beta_6 x_1 x_2 + \beta_7 x_1 x_5 + \beta_8 x_1 x_4
+      \end{align}
+
+      AIC, $C_p$, $R^2$, and $R_a^2$ are three important criteria for model selection.
+      Since Mallows' $C_p$ was used to generate these two models, we will not be
+      using that criterion to compare the two models. Instead, the comparison will
+      lie in the remaining 3 factors: AIC, $R^2$, $R_a^2$. The follow table contains
+      these values for each model.
+
+      \begin{table}[]
+        \centering
+        \begin{tabular}{lll}
+            & \textbf{Model 1}  & \textbf{Model 2}  \\
+        \textbf{AIC} & 29832.34 & 29844.68 \\
+        \textbf{$R^2$}  & 0.3487   & 0.3487   \\
+        \textbf{$R_a^2$} & 0.3482   & 0.3482
+        \end{tabular}
+        \caption{AIC, $R^2$, and $R_a^2$ scores for each model}
+        \label{tab:selection}
+      \end{table}
+
+      As seen from Table \ref{tab:selection}, it appears that Model 1 has a
+      slight edge over Model 2, since its AIC, $R^2$, and $R_a^2$ scores are
+      consistently lower than that of Model 2's. Therefore Model 1 will be chosen
+      as the final model for the dataset due to its slightly higher accuracy
+      in its predictive power over Model 2.
 
     \subsection{Diagnostics and Model Validation}
+      Since the final model has been chosen, the final step is to run
+      diagnostics to validate the model's stability and reasonableness.
 
-    \subsection{Additional Notes}
+      We will conduct residual diagnostics to ensure that the linearity of
+      the response function, the normality of the errors, and homoscedasticity
+      are all maintained. The diagnostic plots are in Figures \ref{fig:histm1}
+      to \ref{fig:scatterm1}.
+
+      \begin{figure}[H]
+        \centering
+        \begin{minipage}{.45\textwidth}
+          \centering
+          \includegraphics[scale=0.35]{selection/histm1}
+          \caption{Studentized Deleted Residual Histogram for Model 1}
+          \label{fig:histm1}
+
+          \includegraphics[scale=0.35]{selection/linem1}
+          \caption{Studentized Deleted Residual Line Plot for Model 1}
+          \label{fig:linem1}
+        \end{minipage}
+        \begin{minipage}{.45\textwidth}
+          \centering
+          \includegraphics[scale=0.35]{selection/qqm1}
+          \caption{Studentized Deleted Residual QQ Plot for Model 1}
+          \label{fig:qqm1}
+
+          \includegraphics[scale=0.35]{selection/scatterm1}
+          \caption{Studentized Deleted Residual Scatter Plot for Model 1}
+          \label{fig:scatterm1}
+        \end{minipage}
+      \end{figure}
+
+      Figure \ref{fig:histm1} indicates a histogram with a relatively normal
+      distribution with a very small right skew. The QQ plot in Figure
+      \ref{fig:qqm1} has slightly odd end behavior but is otherwise normal.
+      The Line Plot in Figure \ref{fig:linem1} is seemingly random without
+      much extreme outliars, as it is supposed to be. And finally, the
+      residual plot in Figure \ref{fig:scatterm1} has a linear, zero gradient
+      smoothing function, which is correct. In all, normality may be slightly
+      skewed but the other properties related to linear regression models are
+      satisfied. \\
+
+      For model validation, we need to run the model on the unseen test dataset and
+      measure the mean square prediction error. The relative proximity of MSPE with
+      the mean square error will indicate how well the model responds to new data,
+      and how strong its predictive capabilities are.
+
+      According to \texttt{R}, the values are as follows:
+
+      \begin{align*}
+        MSE &= 0.2624992 \\
+        MSPE &= 0.2623269
+      \end{align*}
+
+      These values are very closely aligned, indicating that our regression function
+      is plausible, and has the ability to generalize inferences well.
 \end{document}
